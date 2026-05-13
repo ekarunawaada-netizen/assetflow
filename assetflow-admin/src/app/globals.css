@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #2346d5;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #4361ee;
+  --color-secondary: #ae2f34;
+  --color-on-secondary: #ffffff;
+  --color-tertiary: #006449;
+  --color-tertiary-container: #cdffe7;
+  --color-on-tertiary-container: #00513b;
+  --color-background: #f8f9fa;
+  --color-on-background: #191c1d;
+  --color-surface: #ffffff;
+  --color-surface-variant: #e1e3e4;
+  --color-on-surface-variant: #444655;
+  --color-outline: #747686;
+  --color-outline-variant: #c4c5d7;
+
+  --font-headline: "Plus Jakarta Sans", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  --animate-float: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--color-background);
+    color: var(--color-on-background);
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: var(--color-primary-container);
+    color: var(--color-on-primary);
+  }
+}
+
+@layer utilities {
+  .bento-shadow {
+    box-shadow: 6px 6px 0px 0px #191c1d;
+    transition: all 0.2s ease-out;
+  }
+
+  .bento-shadow:hover {
+    box-shadow: 8px 8px 0px 0px #191c1d;
+    transform: translate(-2px, -2px);
+  }
+
+  .bento-shadow-sm {
+    box-shadow: 4px 4px 0px 0px #191c1d;
+  }
+
+  .bento-shadow-inset {
+    box-shadow: inset 4px 4px 0px 0px #191c1d;
+  }
+
+  .admin-glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 2px solid #191c1d;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .font-headline {
+    font-family: var(--font-headline);
+  }
+
+  .font-body {
+    font-family: var(--font-body);
+  }
+}
+
