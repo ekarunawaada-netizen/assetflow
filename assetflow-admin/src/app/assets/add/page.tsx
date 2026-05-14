@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { createAsset } from "@/app/actions/asset";
 import { Upload, X, Check, ArrowLeft, Package } from "lucide-react";
 import Link from "next/link";
 
@@ -9,6 +10,12 @@ export default function AddAssetPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  
+  // Form fields
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("UI Kit");
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -18,20 +25,31 @@ export default function AddAssetPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    
+    try {
+      await createAsset({
+        title,
+        category,
+        price,
+        description,
+        imageUrl: previewUrl || "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=2070&auto=format&fit=crop"
+      });
       setIsSuccess(true);
-    }, 2000);
+    } catch (error) {
+      console.error(error);
+      alert("Gagal menambahkan aset");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSuccess) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[80vh] p-12 text-center bg-background">
-        <div className="w-24 h-24 bg-tertiary-container border-4 border-on-background rounded-[2rem] flex items-center justify-center text-tertiary mb-8 bento-shadow animate-bounce">
+        <div className="w-24 h-24 bg-tertiary-container border-4 border-on-background rounded-4xl flex items-center justify-center text-tertiary mb-8 bento-shadow animate-bounce">
           <Check size={48} strokeWidth={4} />
         </div>
         <h1 className="font-headline font-black text-5xl mb-4 tracking-tight">Aset Berhasil Diunggah!</h1>
@@ -63,9 +81,9 @@ export default function AddAssetPage() {
         {/* Left: Upload Zone */}
         <div className="space-y-8">
           <div className="bg-white border-4 border-on-background p-8 rounded-[2.5rem] bento-shadow">
-            <h2 className="font-headline font-black text-xl mb-6 tracking-tight uppercase tracking-widest text-xs">Pratinjau Gambar</h2>
+            <h2 className="font-headline font-black text-xl mb-6 tracking-tight uppercase">Pratinjau Gambar</h2>
             <div 
-              className={`relative aspect-square rounded-[2rem] border-4 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer overflow-hidden ${
+              className={`relative aspect-square rounded-4xl border-4 border-dashed flex flex-col items-center justify-center transition-all cursor-pointer overflow-hidden ${
                 dragActive ? "border-primary bg-primary/5" : "border-on-background/20 hover:border-primary/50"
               }`}
               onClick={() => document.getElementById('file-upload')?.click()}
@@ -105,7 +123,7 @@ export default function AddAssetPage() {
           </div>
 
           <div className="bg-white border-4 border-on-background p-8 rounded-[2.5rem] bento-shadow">
-            <h2 className="font-headline font-black text-xl mb-6 tracking-tight uppercase tracking-widest text-xs">File Sumber (ZIP)</h2>
+            <h2 className="font-headline font-black text-xl mb-6 tracking-tight uppercase">File Sumber (ZIP)</h2>
             <div className="flex items-center gap-5 p-5 bg-white border-2 border-on-background rounded-2xl bento-shadow-sm">
               <div className="w-14 h-14 bg-primary/10 border-2 border-on-background text-primary rounded-xl flex items-center justify-center bento-shadow-sm">
                 <Package size={28} strokeWidth={2.5} />
@@ -122,7 +140,7 @@ export default function AddAssetPage() {
         {/* Right: Info Form */}
         <div className="space-y-8">
           <div className="bg-white border-4 border-on-background p-8 rounded-[2.5rem] space-y-8 bento-shadow">
-            <h2 className="font-headline font-black text-xl mb-4 tracking-tight uppercase tracking-widest text-xs">Informasi Aset</h2>
+            <h2 className="font-headline font-black text-xl mb-4 tracking-tight uppercase">Informasi Aset</h2>
             
             <div>
               <label className="text-xs font-black text-on-background uppercase tracking-widest block mb-3">Judul Aset</label>
@@ -131,12 +149,18 @@ export default function AddAssetPage() {
                 placeholder="misal: Glassmorphism UI Kit"
                 className="w-full bg-white border-4 border-on-background rounded-2xl px-6 py-4 text-sm font-black outline-none focus:bg-primary/5 transition-all bento-shadow-sm"
                 required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
             </div>
 
             <div>
               <label className="text-xs font-black text-on-background uppercase tracking-widest block mb-3">Kategori</label>
-              <select className="w-full bg-white border-4 border-on-background rounded-2xl px-6 py-4 text-sm font-black outline-none focus:bg-primary/5 transition-all bento-shadow-sm">
+              <select 
+                className="w-full bg-white border-4 border-on-background rounded-2xl px-6 py-4 text-sm font-black outline-none focus:bg-primary/5 transition-all bento-shadow-sm"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
                 <option>UI Kit</option>
                 <option>3D Model</option>
                 <option>Seni Digital</option>
@@ -153,6 +177,8 @@ export default function AddAssetPage() {
                   placeholder="29"
                   className="w-full bg-transparent py-4 text-sm font-black outline-none"
                   required
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
                 />
               </div>
             </div>
@@ -164,6 +190,8 @@ export default function AddAssetPage() {
                 placeholder="Berikan detail fitur dan isi aset ini..."
                 className="w-full bg-white border-4 border-on-background rounded-2xl px-6 py-4 text-sm font-black outline-none focus:bg-primary/5 transition-all resize-none bento-shadow-sm"
                 required
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
             </div>
           </div>
@@ -171,7 +199,7 @@ export default function AddAssetPage() {
           <button 
             type="submit"
             disabled={isSubmitting}
-            className={`w-full py-6 rounded-[2rem] font-headline font-black text-xl transition-all border-4 border-on-background bento-shadow ${
+            className={`w-full py-6 rounded-4xl font-headline font-black text-xl transition-all border-4 border-on-background bento-shadow ${
               isSubmitting 
                 ? "bg-slate-200 text-slate-400 cursor-not-allowed opacity-50" 
                 : "bg-primary text-white hover:scale-[1.02] active:scale-[0.98]"

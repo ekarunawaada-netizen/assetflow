@@ -26,27 +26,14 @@ import {
   ArrowDown
 } from "lucide-react";
 
-const lineData = [
-  { time: '00:00', value: 400 },
-  { time: '04:00', value: 300 },
-  { time: '08:00', value: 800 },
-  { time: '12:00', value: 1200 },
-  { time: '16:00', value: 900 },
-  { time: '20:00', value: 1100 },
-  { time: '23:59', value: 600 },
-];
+const lineData: any[] = [];
 
-const pieData = [
-  { name: 'Direct', value: 400 },
-  { name: 'Social', value: 300 },
-  { name: 'Search', value: 300 },
-  { name: 'Ref', value: 200 },
-];
+const pieData: any[] = [];
 
 const COLORS = ['#2346d5', '#ae2f34', '#006449', '#4361ee'];
 
 export default function AnalyticsPage() {
-  const [liveVisitors, setLiveVisitors] = useState(142);
+  const [liveVisitors, setLiveVisitors] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -63,7 +50,7 @@ export default function AnalyticsPage() {
           <h1 className="font-headline font-black text-5xl text-on-background tracking-tight">Analisis Trafik</h1>
           <p className="text-outline font-bold mt-2 text-lg">Laporan real-time pengunjung dan performa website.</p>
         </div>
-        <div className="bg-tertiary-container border-4 border-on-background p-8 rounded-[2rem] flex items-center gap-6 bento-shadow">
+        <div className="bg-tertiary-container border-4 border-on-background p-8 rounded-4xl flex items-center gap-6 bento-shadow">
           <div className="relative">
             <div className="w-5 h-5 bg-tertiary border-2 border-on-background rounded-full" />
             <div className="absolute inset-0 w-5 h-5 bg-tertiary rounded-full animate-ping opacity-50" />
@@ -138,12 +125,7 @@ export default function AnalyticsPage() {
             </ResponsiveContainer>
           </div>
           <div className="space-y-6 flex-1">
-            {[
-              { label: "Desktop", value: "45%", icon: Monitor, color: "text-primary", bg: "bg-primary/10" },
-              { label: "Mobile", value: "42%", icon: Smartphone, color: "text-secondary", bg: "bg-secondary/10" },
-              { label: "Tablet", value: "10%", icon: Tablet, color: "text-tertiary", bg: "bg-tertiary/10" },
-              { label: "Lainnya", value: "3%", icon: Globe, color: "text-primary-container", bg: "bg-primary-container/10" },
-            ].map((device) => (
+            {[].map((device: any) => (
               <div key={device.label} className="flex items-center justify-between p-4 bg-white border-2 border-on-background rounded-2xl bento-shadow-sm">
                 <div className="flex items-center gap-4">
                   <div className={`p-2 rounded-lg border-2 border-on-background ${device.bg}`}>
@@ -166,12 +148,7 @@ export default function AnalyticsPage() {
             <Link href="#" className="text-xs font-black text-primary uppercase tracking-widest border-b-2 border-primary pb-1">Lihat Peta</Link>
           </div>
           <div className="space-y-6">
-            {[
-              { country: "Indonesia", visitors: "12,450", percentage: 45, flag: "🇮🇩" },
-              { country: "United States", visitors: "8,320", percentage: 32, flag: "🇺🇸" },
-              { country: "Singapore", visitors: "4,120", percentage: 15, flag: "🇸🇬" },
-              { country: "United Kingdom", visitors: "2,100", percentage: 8, flag: "🇬🇧" },
-            ].map((loc) => (
+            {[].map((loc: any) => (
               <div key={loc.country} className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-base font-black text-on-background">{loc.flag} {loc.country}</span>
@@ -189,13 +166,8 @@ export default function AnalyticsPage() {
         <div className="lg:col-span-2 bg-surface border-4 border-on-background rounded-[2.5rem] p-8 bento-shadow">
           <h2 className="font-headline font-black text-2xl mb-10 tracking-tight">Sumber Referensi</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {[
-              { source: "google.com", value: "5.2k", trend: "up", color: "bg-tertiary-container" },
-              { source: "instagram.com", value: "3.1k", trend: "up", color: "bg-secondary/10" },
-              { source: "dribbble.com", value: "2.4k", trend: "down", color: "bg-primary/10" },
-              { source: "twitter.com", value: "1.8k", trend: "up", color: "bg-primary-container/10" },
-            ].map((ref) => (
-              <div key={ref.source} className="p-6 bg-white border-2 border-on-background rounded-[2rem] flex items-center justify-between bento-shadow-sm">
+            {[].map((ref: any) => (
+              <div key={ref.source} className="p-6 bg-white border-2 border-on-background rounded-4xl flex items-center justify-between bento-shadow-sm">
                 <div>
                   <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-1">{ref.source}</p>
                   <p className="text-2xl font-black tracking-tight">{ref.value}</p>

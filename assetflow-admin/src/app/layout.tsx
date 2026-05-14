@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import "./globals.css";
-import AdminSidebar from "@/components/layout/AdminSidebar";
+import SidebarWrapper from "@/components/layout/SidebarWrapper";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -34,8 +34,8 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-background text-foreground flex min-h-screen">
-        <AdminSidebar />
-        <main className="flex-1 overflow-y-auto">
+        <SidebarWrapper />
+        <main className="flex-1 overflow-y-auto w-full pt-16 md:pt-0">
           {children}
         </main>
       </body>

@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  ADMIN
+  CREATOR
+  USER
+}
+
+enum AssetStatus {
+  Aktif
+  Draft
+}
+
+model Profile {
+  id        String   @id @default(uuid())
+  name      String
+  avatar    String?
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  creator   Creator?
+}
+
+model Creator {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      Profile  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio       String?
+  sales     Int      @default(0)
+  followers Int      @default(0)
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assets    Asset[]
+}
+
+model Asset {
+  id          String      @id @default(uuid())
+  title       String
+  category    String
+  price       Decimal     @db.Decimal(10, 2)
+  priceEth    String?
+  imageUrl    String
+  fileUrl     String?
+  status      AssetStatus @default(Draft)
+  sales       Int         @default(0)
+  creatorId   String
+  creator     Creator     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Collection {
+  id        String   @id @default(uuid())
+  title     String
+  imageUrl  String
+  tags      String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

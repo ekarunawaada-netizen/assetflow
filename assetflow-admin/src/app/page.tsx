@@ -17,43 +17,35 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 
-const data = [
-  { name: 'Sen', uv: 4000, pv: 2400, amt: 2400 },
-  { name: 'Sel', uv: 3000, pv: 1398, amt: 2210 },
-  { name: 'Rab', uv: 2000, pv: 9800, amt: 2290 },
-  { name: 'Kam', uv: 2780, pv: 3908, amt: 2000 },
-  { name: 'Jum', uv: 1890, pv: 4800, amt: 2181 },
-  { name: 'Sab', uv: 2390, pv: 3800, amt: 2500 },
-  { name: 'Min', uv: 3490, pv: 4300, amt: 2100 },
-];
+const data: any[] = [];
 
 const stats = [
-  { label: "Total Aset", value: "1,284", icon: Package, trend: "+12%", color: "text-blue-500", bg: "bg-blue-500/10" },
-  { label: "Pengunjung", value: "48.5k", icon: Users, trend: "+5.4%", color: "text-purple-500", bg: "bg-purple-500/10" },
-  { label: "Penjualan", value: "Rp 12.4M", icon: ShoppingBag, trend: "+18%", color: "text-emerald-500", bg: "bg-emerald-500/10" },
-  { label: "Tayangan", value: "156.2k", icon: Eye, trend: "+2.1%", color: "text-orange-500", bg: "bg-orange-500/10" },
+  { label: "Total Aset", value: "0", icon: Package, trend: "0%", color: "text-blue-500", bg: "bg-blue-500/10" },
+  { label: "Pengunjung", value: "0", icon: Users, trend: "0%", color: "text-purple-500", bg: "bg-purple-500/10" },
+  { label: "Penjualan", value: "Rp 0", icon: ShoppingBag, trend: "0%", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+  { label: "Tayangan", value: "0", icon: Eye, trend: "0%", color: "text-orange-500", bg: "bg-orange-500/10" },
 ];
 
 export default function Dashboard() {
   return (
-    <div className="p-12 space-y-12 bg-background min-h-screen">
+    <div className="p-6 md:p-12 space-y-8 md:space-y-12 bg-background min-h-screen">
       {/* Header */}
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
-          <h1 className="font-headline font-black text-5xl text-on-background tracking-tight">Panel Utama</h1>
-          <p className="text-outline font-bold mt-2 text-lg">Selamat datang kembali, Admin. Pantau performa hari ini.</p>
+          <h1 className="font-headline font-black text-3xl md:text-5xl text-on-background tracking-tight">Panel Utama</h1>
+          <p className="text-outline font-bold mt-2 text-sm md:text-lg">Selamat datang kembali, Admin. Pantau performa hari ini.</p>
         </div>
-        <button className="bg-primary text-white px-8 py-4 rounded-2xl font-black text-base flex items-center gap-3 border-2 border-on-background bento-shadow">
+        <button className="w-full md:w-auto bg-primary text-white px-8 py-4 rounded-2xl font-black text-base flex justify-center items-center gap-3 border-2 border-on-background bento-shadow active:translate-y-1 active:shadow-none transition-all">
           Unduh Laporan <ArrowUpRight size={20} strokeWidth={3} />
         </button>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-            <div key={stat.label} className="bg-surface border-4 border-on-background p-8 rounded-[2rem] transition-all hover:-translate-y-1 bento-shadow group">
+            <div key={stat.label} className="bg-surface border-4 border-on-background p-6 md:p-8 rounded-3xl md:rounded-4xl transition-all hover:-translate-y-1 bento-shadow group">
               <div className="flex justify-between items-start mb-6">
                 <div className={`p-4 rounded-2xl border-2 border-on-background ${stat.bg} ${stat.color} bento-shadow-sm`}>
                   <Icon size={28} strokeWidth={2.5} />
@@ -69,12 +61,12 @@ export default function Dashboard() {
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         {/* Main Chart */}
-        <div className="lg:col-span-2 bg-white border-4 border-on-background rounded-[2.5rem] p-8 bento-shadow">
-          <div className="flex justify-between items-center mb-10">
-            <h2 className="font-headline font-black text-2xl tracking-tight">Analisis Pertumbuhan</h2>
-            <select className="bg-white border-2 border-on-background rounded-xl px-4 py-2 text-sm font-black outline-none bento-shadow-sm">
+        <div className="lg:col-span-2 bg-white border-4 border-on-background rounded-4xl md:rounded-[2.5rem] p-6 md:p-8 bento-shadow overflow-hidden">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 md:mb-10">
+            <h2 className="font-headline font-black text-xl md:text-2xl tracking-tight">Analisis Pertumbuhan</h2>
+            <select className="w-full sm:w-auto bg-white border-2 border-on-background rounded-xl px-4 py-2 text-sm font-black outline-none bento-shadow-sm">
               <option>7 Hari Terakhir</option>
               <option>30 Hari Terakhir</option>
             </select>
@@ -101,17 +93,12 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-surface border-4 border-on-background rounded-[2.5rem] p-8 bento-shadow">
-          <h2 className="font-headline font-black text-2xl mb-8 tracking-tight">Aktivitas Real-time</h2>
+        <div className="bg-surface border-4 border-on-background rounded-4xl md:rounded-[2.5rem] p-6 md:p-8 bento-shadow">
+          <h2 className="font-headline font-black text-xl md:text-2xl mb-6 md:mb-8 tracking-tight">Aktivitas Real-time</h2>
           <div className="space-y-8">
-            {[
-              { user: "Alex J.", action: "Membeli UI Kit Pro", time: "2 mnt yang lalu", color: "bg-primary" },
-              { user: "Sarah K.", action: "Mengunggah 3D Model", time: "15 mnt yang lalu", color: "bg-primary-container" },
-              { user: "Admin", action: "Menghapus aset #124", time: "1 jam yang lalu", color: "bg-secondary" },
-              { user: "System", action: "Deploy sukses", time: "3 jam yang lalu", color: "bg-tertiary" },
-            ].map((item, i) => (
+            {[].map((item: any, i) => (
               <div key={i} className="flex gap-5">
-                <div className={`w-12 h-12 rounded-2xl border-2 border-on-background ${item.color} flex-shrink-0 flex items-center justify-center text-white font-black text-sm bento-shadow-sm`}>
+                <div className={`w-12 h-12 rounded-2xl border-2 border-on-background ${item.color} shrink-0 flex items-center justify-center text-white font-black text-sm bento-shadow-sm`}>
                   {item.user[0]}
                 </div>
                 <div className="flex flex-col justify-center">

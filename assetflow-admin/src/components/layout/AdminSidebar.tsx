@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { 
   LayoutDashboard, 
   ImagePlus, 
@@ -19,6 +20,14 @@ const navItems = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.refresh();
+    router.push("/login");
+  };
 
   return (
     <aside className="w-72 bg-surface border-r-4 border-on-background h-screen sticky top-0 flex flex-col transition-all">
@@ -56,7 +65,10 @@ export default function AdminSidebar() {
       </nav>
 
       <div className="p-6 border-t-4 border-on-background">
-        <button className="flex items-center gap-3 w-full px-5 py-3.5 rounded-2xl font-body font-black text-sm text-secondary border-2 border-transparent hover:border-on-background hover:bg-secondary/10 transition-all">
+        <button 
+          onClick={handleLogout}
+          className="flex items-center gap-3 w-full px-5 py-3.5 rounded-2xl font-body font-black text-sm text-secondary border-2 border-transparent hover:border-on-background hover:bg-secondary/10 transition-all"
+        >
           <LogOut size={20} strokeWidth={2.5} />
           Keluar Sesi
         </button>
