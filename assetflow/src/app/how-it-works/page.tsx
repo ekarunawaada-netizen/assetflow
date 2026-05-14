@@ -122,9 +122,9 @@ export default function HowItWorksPage() {
             {buyerSteps.map((step, i) => (
               <article
                 key={step.step}
-                className="bg-white border-2 border-on-background rounded-2xl p-6 bento-shadow relative overflow-hidden group"
+                className="bg-white border-2 border-on-background rounded-2xl p-6 bento-shadow relative group"
               >
-                <div className="absolute top-4 right-4 font-headline font-black text-[48px] text-background leading-none select-none">
+                <div className="absolute top-4 right-4 font-headline font-black text-[48px] text-background leading-none select-none overflow-hidden h-12">
                   {step.step}
                 </div>
                 <div className="w-12 h-12 rounded-xl bg-primary/10 border-2 border-primary/20 flex items-center justify-center mb-4 group-hover:bg-primary group-hover:border-primary transition-colors">
@@ -133,9 +133,11 @@ export default function HowItWorksPage() {
                 <h3 className="font-headline text-[18px] font-bold text-on-background mb-2">{step.title}</h3>
                 <p className="font-body text-[14px] text-on-surface-variant leading-relaxed">{step.desc}</p>
                 {i < buyerSteps.length - 1 && (
-                  <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
-                    <div className="w-6 h-6 rounded-full bg-on-background flex items-center justify-center">
-                      <span className="material-symbols-outlined text-white text-[14px]">arrow_forward</span>
+                  <div className="hidden lg:block absolute -right-4 top-1/2 -translate-y-1/2 z-10">
+                    <div className="w-8 h-8 rounded-full bg-on-background border-2 border-white flex items-center justify-center shadow-lg">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7"></path>
+                      </svg>
                     </div>
                   </div>
                 )}
@@ -161,7 +163,7 @@ export default function HowItWorksPage() {
             </div>
             <div>
               <h2 className="font-headline text-3xl font-black text-on-background tracking-tight">Untuk Kreator</h2>
-              <p className="font-body text-[14px] text-outline">Mulai hasilkan uang dari karya kreatif Anda</p>
+              <p className="font-body text-[14px] text-outline">Gabung 100% Gratis & mulai hasilkan uang dari karya Anda</p>
             </div>
           </div>
 
@@ -169,9 +171,9 @@ export default function HowItWorksPage() {
             {creatorSteps.map((step, i) => (
               <article
                 key={step.step}
-                className="bg-white border-2 border-on-background rounded-2xl p-6 bento-shadow relative overflow-hidden group"
+                className="bg-white border-2 border-on-background rounded-2xl p-6 bento-shadow relative group"
               >
-                <div className="absolute top-4 right-4 font-headline font-black text-[48px] text-background leading-none select-none">
+                <div className="absolute top-4 right-4 font-headline font-black text-[48px] text-background leading-none select-none overflow-hidden h-12">
                   {step.step}
                 </div>
                 <div className="w-12 h-12 rounded-xl bg-secondary/10 border-2 border-secondary/20 flex items-center justify-center mb-4 group-hover:bg-secondary group-hover:border-secondary transition-colors">
@@ -180,9 +182,11 @@ export default function HowItWorksPage() {
                 <h3 className="font-headline text-[18px] font-bold text-on-background mb-2">{step.title}</h3>
                 <p className="font-body text-[14px] text-on-surface-variant leading-relaxed">{step.desc}</p>
                 {i < creatorSteps.length - 1 && (
-                  <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
-                    <div className="w-6 h-6 rounded-full bg-on-background flex items-center justify-center">
-                      <span className="material-symbols-outlined text-white text-[14px]">arrow_forward</span>
+                  <div className="hidden lg:block absolute -right-4 top-1/2 -translate-y-1/2 z-10">
+                    <div className="w-8 h-8 rounded-full bg-on-background border-2 border-white flex items-center justify-center shadow-lg">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7"></path>
+                      </svg>
                     </div>
                   </div>
                 )}
@@ -191,81 +195,7 @@ export default function HowItWorksPage() {
           </div>
         </section>
 
-        {/* Harga */}
-        <section className="border-y-2 border-on-background bg-on-background px-6 py-20">
-          <div className="max-w-[1280px] mx-auto">
-            <div className="text-center mb-14">
-              <h2 className="font-headline text-4xl font-black text-white mb-4">Harga Sederhana & Adil</h2>
-              <p className="font-body text-[18px] text-outline">Tidak ada biaya tersembunyi. Anda selalu tahu apa yang Anda bayar dan dapatkan.</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                {
-                  plan: "Kreator Pemula",
-                  price: "Gratis",
-                  share: "70%",
-                  features: ["Hingga 10 listing", "Penempatan standar", "Analitik dasar", "Dukungan email"],
-                  cta: "Mulai Sekarang",
-                  highlight: false,
-                },
-                {
-                  plan: "Kreator Pro",
-                  price: "$9/bln",
-                  share: "80%",
-                  features: ["Listing tak terbatas", "Penempatan prioritas", "Analitik lanjutan", "Dukungan khusus", "Fitur akses awal"],
-                  cta: "Jadi Pro",
-                  highlight: true,
-                },
-                {
-                  plan: "Perusahaan",
-                  price: "Kustom",
-                  share: "85%+",
-                  features: ["Integrasi kustom", "Akses API", "Opsi white-label", "Manajer akun", "Kontrak kustom"],
-                  cta: "Hubungi Kami",
-                  highlight: false,
-                },
-              ].map((plan) => (
-                <article
-                  key={plan.plan}
-                  className={`rounded-2xl border-2 p-8 ${
-                    plan.highlight
-                      ? "border-primary-container bg-primary bento-shadow"
-                      : "border-on-surface-variant bg-on-background hover:border-outline transition-colors"
-                  }`}
-                >
-                  {plan.highlight && (
-                    <div className="inline-flex items-center gap-1 font-headline font-bold text-[11px] uppercase tracking-widest text-primary bg-white px-3 py-1 rounded-full mb-4">
-                      ✦ Paling Populer
-                    </div>
-                  )}
-                  <div className="font-body text-[13px] font-bold text-outline uppercase tracking-widest mb-2">{plan.plan}</div>
-                  <div className="font-headline text-4xl font-black text-white mb-1">{plan.price}</div>
-                  <div className="font-body text-[14px] text-outline-variant mb-6">
-                    Bagi hasil <span className="font-bold text-white text-[18px]">{plan.share}</span>
-                  </div>
-                  <ul className="space-y-3 mb-8">
-                    {plan.features.map((f) => (
-                      <li key={f} className="flex items-center gap-2 font-body text-[14px] text-outline-variant">
-                        <span className="material-symbols-outlined text-tertiary text-[16px]">check_circle</span>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link
-                    href="/upload"
-                    className={`block text-center font-headline font-bold text-[14px] px-6 py-3 rounded-xl border-2 transition-all ${
-                      plan.highlight
-                        ? "bg-white text-primary border-white hover:bg-white/90"
-                        : "bg-transparent text-white border-on-surface-variant hover:border-white"
-                    }`}
-                  >
-                    {plan.cta}
-                  </Link>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
+
 
         {/* FAQ */}
         <section className="max-w-[1280px] mx-auto px-6 py-20">

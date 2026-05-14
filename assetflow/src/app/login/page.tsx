@@ -1,173 +1,306 @@
 "use client";
-import Link from "next/link";
+
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Lock, Mail, ArrowRight, Eye, EyeOff, AlertCircle, Github, Globe, User } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
-  const [isLogin, setIsLogin] = useState(true);
-  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  
+  const [view, setView] = useState<"login" | "signup" | "forgot" | "otp">("login");
+  const [otp, setOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulasi login
-    router.push("/");
+    setIsLoading(true);
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setErrorMsg(error.message === "Invalid login credentials" ? "Email atau kata sandi salah." : error.message);
+      setIsLoading(false);
+    } else {
+      window.location.href = "/";
+    }
   };
 
-  const socialLogins = [
-    {
-      name: "Google",
-      icon: (
-        <svg className="w-5 h-5" viewBox="0 0 24 24">
-          <path
-            fill="currentColor"
-            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-          />
-          <path
-            fill="currentColor"
-            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-          />
-          <path
-            fill="currentColor"
-            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-          />
-          <path
-            fill="currentColor"
-            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-          />
-        </svg>
-      ),
-      color: "hover:bg-[#4285F4]/10 hover:border-[#4285F4] hover:text-[#4285F4]",
-    },
-    {
-      name: "Facebook",
-      icon: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-        </svg>
-      ),
-      color: "hover:bg-[#1877F2]/10 hover:border-[#1877F2] hover:text-[#1877F2]",
-    },
-    {
-      name: "X",
-      icon: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932 6.064-6.932zm-1.294 19.497h2.039L6.482 3.239h-2.19L17.607 20.65z" />
-        </svg>
-      ),
-      color: "hover:bg-black/10 hover:border-black hover:text-black",
-    },
-  ];
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setErrorMsg(null);
+    
+    const supabase = createClient();
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      }
+    });
+
+    if (error) {
+      setErrorMsg(error.message);
+    } else {
+      setSuccessMsg("Pendaftaran berhasil! Silakan cek email kamu untuk konfirmasi.");
+      setView("login");
+    }
+    setIsLoading(false);
+  };
+
+  const handleSocialLogin = async (provider: 'google' | 'twitter') => {
+    const supabase = createClient();
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      }
+    });
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setErrorMsg(null);
+    
+    const supabase = createClient();
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+    if (error) {
+      setErrorMsg(error.message);
+    } else {
+      setSuccessMsg("Kode OTP telah dikirim ke email kamu.");
+      setView("otp");
+    }
+    setIsLoading(false);
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setErrorMsg(null);
+    
+    const supabase = createClient();
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      email,
+      token: otp,
+      type: 'recovery',
+    });
+
+    if (verifyError) {
+      setErrorMsg("Kode OTP salah atau kadaluarsa.");
+      setIsLoading(false);
+      return;
+    }
+
+    const { error: updateError } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
+
+    if (updateError) {
+      setErrorMsg(updateError.message);
+    } else {
+      alert("Sandi berhasil diperbarui!");
+      setView("login");
+      setSuccessMsg("Sandi diperbarui. Silakan login.");
+    }
+    setIsLoading(false);
+  };
 
   return (
-    <main className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      {/* Elemen Latar Belakang Dinamis */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/5 rounded-full blur-[120px] animate-pulse" />
-
-      <div className="mb-10 text-center relative z-10">
-        <Link href="/" className="font-headline text-[32px] font-black text-on-background tracking-tighter hover:text-primary transition-colors flex items-center gap-2">
-          <div className="w-10 h-10 bg-on-background rounded-xl flex items-center justify-center rotate-3 shadow-[4px_4px_0px_0px_#2346d5]">
-            <span className="material-symbols-outlined text-white text-[24px]">fluid_meditation</span>
+    <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-6 font-body">
+      <div className="w-full max-w-[480px]">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-3 mb-6 bg-white px-6 py-3 rounded-full border-2 border-black bento-shadow-sm">
+            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+              <div className="w-4 h-4 bg-primary rotate-45" />
+            </div>
+            <span className="font-headline font-black text-xl">AssetFlow</span>
           </div>
-          AssetFlow
-        </Link>
-      </div>
-
-      <div className="w-full max-w-[460px] bg-white border-2 border-on-background rounded-[32px] p-8 md:p-10 bento-shadow relative z-10">
-        <div className="mb-8">
-          <h1 className="font-headline text-3xl font-black text-on-background mb-2">
-            {isLogin ? "Selamat Datang Kembali" : "Buat Akun"}
+          <h1 className="font-headline font-black text-4xl mb-2 tracking-tight">
+            {view === "login" ? "Selamat Datang" : view === "signup" ? "Buat Akun Baru" : "Pemulihan Akun"}
           </h1>
-          <p className="font-body text-[15px] text-on-surface-variant">
-            {isLogin 
-              ? "Masuk untuk mengakses dasbor dan aset premium Anda." 
-              : "Bergabunglah dengan marketplace berisi 10.000+ kreator kelas dunia."}
+          <p className="text-gray-500 font-bold">
+            {view === "login" ? "Masuk untuk mengakses library aset kamu." : "Mulai perjalanan kreatif kamu di sini."}
           </p>
         </div>
 
-        {/* Login Sosial */}
-        <div className="grid grid-cols-3 gap-3 mb-8">
-          {socialLogins.map((social) => (
-            <button
-              key={social.name}
-              className={`flex flex-col items-center justify-center gap-2 py-3.5 border-2 border-on-background rounded-2xl transition-all hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_currentColor] active:translate-y-0 active:shadow-none ${social.color}`}
-              title={`Masuk dengan ${social.name}`}
-            >
-              {social.icon}
-              <span className="font-headline font-bold text-[11px] uppercase tracking-wider">{social.name}</span>
-            </button>
-          ))}
-        </div>
-
-        <div className="relative flex items-center gap-4 mb-8">
-          <div className="flex-1 h-0.5 bg-outline-variant" />
-          <span className="font-body text-[12px] font-bold text-outline uppercase tracking-widest">atau email</span>
-          <div className="flex-1 h-0.5 bg-outline-variant" />
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {!isLogin && (
-            <div>
-              <label className="font-body font-bold text-[13px] text-on-background block mb-2 ml-1">Nama Lengkap</label>
-              <input 
-                type="text" 
-                placeholder="misal: Alex River" 
-                required
-                className="w-full border-2 border-on-background rounded-2xl px-5 py-3.5 font-body text-[15px] outline-none focus:border-primary focus:shadow-[4px_4px_0px_0px_#2346d5] transition-all bg-background/30"
-              />
+        {/* Card */}
+        <div className="bg-white border-4 border-black rounded-[2.5rem] bento-shadow p-10 relative overflow-hidden">
+          
+          {/* Messages */}
+          {errorMsg && (
+            <div className="mb-6 p-4 bg-red-50 border-2 border-red-500 rounded-2xl flex gap-3 items-center animate-in fade-in slide-in-from-top-4 duration-300">
+              <AlertCircle className="text-red-500 shrink-0" size={20} />
+              <p className="text-sm font-bold text-red-600">{errorMsg}</p>
             </div>
           )}
-          <div>
-            <label className="font-body font-bold text-[13px] text-on-background block mb-2 ml-1">Alamat Email</label>
-            <input 
-              type="email" 
-              placeholder="alex@example.com" 
-              required
-              className="w-full border-2 border-on-background rounded-2xl px-5 py-3.5 font-body text-[15px] outline-none focus:border-primary focus:shadow-[4px_4px_0px_0px_#2346d5] transition-all bg-background/30"
-            />
-          </div>
-          <div>
-            <div className="flex justify-between items-center mb-2 ml-1">
-              <label className="font-body font-bold text-[13px] text-on-background">Kata Sandi</label>
-              {isLogin && (
-                <button type="button" className="text-[12px] font-bold text-primary hover:underline">Lupa kata sandi?</button>
-              )}
+
+          {successMsg && (
+            <div className="mb-6 p-4 bg-green-50 border-2 border-green-500 rounded-2xl flex gap-3 items-center animate-in fade-in slide-in-from-top-4 duration-300">
+              <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                <ArrowRight className="text-white -rotate-45" size={12} strokeWidth={4} />
+              </div>
+              <p className="text-sm font-bold text-green-600">{successMsg}</p>
             </div>
-            <input 
-              type="password" 
-              placeholder="••••••••" 
-              required
-              className="w-full border-2 border-on-background rounded-2xl px-5 py-3.5 font-body text-[15px] outline-none focus:border-primary focus:shadow-[4px_4px_0px_0px_#2346d5] transition-all bg-background/30"
-            />
-          </div>
+          )}
 
-          <button 
-            type="submit"
-            className="w-full bg-primary text-white font-headline font-bold text-[16px] py-4 rounded-2xl border-2 border-on-background bento-shadow active:translate-y-1 active:shadow-none transition-all mt-4"
-          >
-            {isLogin ? "Masuk ke AssetFlow" : "Buat Akun Saya"}
-          </button>
-        </form>
+          {view === "login" || view === "signup" ? (
+            <div className="space-y-6">
+              {/* Social Login */}
+              <div className="grid grid-cols-2 gap-4">
+                <button 
+                  onClick={() => handleSocialLogin('google')}
+                  className="flex items-center justify-center gap-3 py-4 border-2 border-black rounded-2xl font-black hover:bg-gray-50 transition-all active:scale-95 bento-shadow-sm"
+                >
+                  <Globe size={20} />
+                  Google
+                </button>
+                <button 
+                  onClick={() => handleSocialLogin('twitter')}
+                  className="flex items-center justify-center gap-3 py-4 border-2 border-black rounded-2xl font-black hover:bg-gray-50 transition-all active:scale-95 bento-shadow-sm"
+                >
+                  <User size={20} />
+                  Twitter
+                </button>
+              </div>
 
-        <div className="mt-10 pt-8 border-t-2 border-outline-variant text-center">
-          <p className="font-body text-[15px] text-on-surface-variant">
-            {isLogin ? "Belum punya akun?" : "Sudah menjadi bagian dari komunitas?"}
-            <button 
-              onClick={() => setIsLogin(!isLogin)}
-              className="ml-2 font-bold text-primary hover:underline"
-            >
-              {isLogin ? "Buat akun sekarang" : "Masuk di sini"}
-            </button>
-          </p>
+              <div className="relative flex items-center justify-center py-2">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200"></div>
+                </div>
+                <span className="relative px-4 bg-white text-xs font-black text-gray-400 uppercase tracking-widest">Atau via Email</span>
+              </div>
+
+              <form onSubmit={view === "login" ? handleLogin : handleSignUp} className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-widest text-gray-400">Email</label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                    <input 
+                      type="email" 
+                      required
+                      placeholder="kamu@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full py-4 pl-12 pr-4 border-2 border-black rounded-2xl font-bold outline-none focus:ring-4 focus:ring-primary/20 transition-all bento-shadow-sm"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-black uppercase tracking-widest text-gray-400">Kata Sandi</label>
+                    {view === "login" && (
+                      <button type="button" onClick={() => setView("forgot")} className="text-xs font-black text-primary hover:underline">Lupa Sandi?</button>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                    <input 
+                      type={showPassword ? "text" : "password"} 
+                      required
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full py-4 pl-12 pr-12 border-2 border-black rounded-2xl font-bold outline-none focus:ring-4 focus:ring-primary/20 transition-all bento-shadow-sm"
+                    />
+                    <button 
+                      type="button" 
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                </div>
+
+                <button 
+                  type="submit" 
+                  disabled={isLoading}
+                  className="w-full py-5 bg-black text-white rounded-2xl font-headline font-black text-lg border-2 border-black bento-shadow hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+                >
+                  {isLoading ? "Memproses..." : view === "login" ? "Masuk Sekarang" : "Daftar Akun"}
+                </button>
+              </form>
+
+              <p className="text-center text-sm font-bold text-gray-500">
+                {view === "login" ? "Belum punya akun?" : "Sudah punya akun?"}{" "}
+                <button 
+                  onClick={() => setView(view === "login" ? "signup" : "login")}
+                  className="text-black underline font-black"
+                >
+                  {view === "login" ? "Daftar Gratis" : "Masuk di Sini"}
+                </button>
+              </p>
+            </div>
+          ) : view === "forgot" ? (
+            <div className="space-y-6">
+               <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-widest text-gray-400">Email Pemulihan</label>
+                <input 
+                  type="email" 
+                  required
+                  placeholder="admin@assetflow.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full py-4 px-6 border-2 border-black rounded-2xl font-bold outline-none bento-shadow-sm"
+                />
+              </div>
+              <button 
+                onClick={handleResetPassword}
+                className="w-full py-5 bg-black text-white rounded-2xl font-black bento-shadow hover:scale-105 transition-all"
+              >
+                Kirim Kode OTP
+              </button>
+              <button onClick={() => setView("login")} className="w-full text-xs font-black text-gray-400 uppercase tracking-widest">Kembali</button>
+            </div>
+          ) : (
+            <form onSubmit={handleVerifyOtp} className="space-y-6">
+              <div className="space-y-2 text-center">
+                <label className="text-xs font-black uppercase tracking-widest text-gray-400">Masukkan Kode OTP</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="000000"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="w-full py-6 text-center text-3xl font-black tracking-[0.5em] border-2 border-black rounded-2xl bento-shadow-sm outline-none"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-black uppercase tracking-widest text-gray-400">Sandi Baru</label>
+                <input 
+                  type="password" 
+                  required
+                  placeholder="Minimal 6 karakter"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full py-4 px-6 border-2 border-black rounded-2xl font-bold outline-none bento-shadow-sm"
+                />
+              </div>
+              <button 
+                type="submit"
+                className="w-full py-5 bg-black text-white rounded-2xl font-black bento-shadow hover:scale-105 transition-all"
+              >
+                Ganti Sandi & Masuk
+              </button>
+            </form>
+          )}
         </div>
       </div>
-      
-      {/* Info Footer */}
-      <div className="mt-8 text-center relative z-10">
-        <p className="font-body text-[12px] text-outline">
-          © 2025 AssetFlow Inc. <Link href="/how-it-works" className="underline hover:text-on-background ml-2">Cara kerja</Link>
-        </p>
-      </div>
-    </main>
+    </div>
   );
 }
