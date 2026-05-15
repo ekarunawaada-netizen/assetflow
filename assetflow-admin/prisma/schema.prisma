@@ -59,6 +59,7 @@ model Creator {
 model Asset {
   id          String      @id @default(uuid())
   title       String
+  description String?     @db.Text
   category    String
   price       Decimal     @db.Decimal(10, 2)
   priceEth    String?
