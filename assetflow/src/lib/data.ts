@@ -43,7 +43,42 @@ export type Collection = {
   tags: string[];
 };
 
+import { createClient } from "./supabase/client";
+
 export const assets: Asset[] = [];
+
+export async function getDynamicAssets() {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('Asset')
+    .select('*, creator:Creator(*)')
+    .eq('status', 'Aktif')
+    .order('createdAt', { ascending: false });
+
+  if (error) {
+    console.error("Error fetching assets:", error);
+    return [];
+  }
+
+  return data.map((asset: any) => ({
+    id: asset.id,
+    title: asset.title,
+    category: asset.category,
+    price: parseFloat(asset.price),
+    image: asset.imageUrl,
+    creator: {
+      name: asset.creator?.name || "Kreator",
+      avatar: asset.creator?.avatar || "https://i.pravatar.cc/100",
+      handle: asset.creator?.handle || "@kreator",
+    },
+    tags: [asset.category],
+    description: asset.title,
+    downloads: 0,
+    rating: 5,
+    reviews: 0
+  }));
+}
+
 export const categories = ["Semua Aset", "Seni Digital", "Model 3D", "Templat", "Ikon"];
 export const creators: Creator[] = [];
 export const collections: Collection[] = [];

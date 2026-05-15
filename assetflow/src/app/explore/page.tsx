@@ -2,7 +2,7 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import AssetCard from "@/components/features/AssetCard";
-import { assets, categories } from "@/lib/data";
+import { getDynamicAssets, categories } from "@/lib/data";
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
@@ -13,16 +13,25 @@ function ExploreContent() {
   const searchParams = useSearchParams();
   const qParam = searchParams.get("q") || "";
   
+  const [dbAssets, setDbAssets] = useState<any[]>([]);
   const [activeCategory, setActiveCategory] = useState("Semua Aset");
   const [sortBy, setSortBy] = useState("Terbaru");
   const [searchQuery, setSearchQuery] = useState(qParam);
+
+  useEffect(() => {
+    async function load() {
+      const data = await getDynamicAssets();
+      setDbAssets(data);
+    }
+    load();
+  }, []);
 
   useEffect(() => {
     setSearchQuery(qParam);
   }, [qParam]);
 
   const filtered = useMemo(() => {
-    let list = [...assets];
+    let list = [...dbAssets];
     if (activeCategory !== "Semua Aset") {
       list = list.filter((a) => a.category === activeCategory);
     }
@@ -45,7 +54,7 @@ function ExploreContent() {
         {/* Header Halaman */}
         <div className="mb-10">
           <h1 className="font-headline text-4xl font-black text-on-background tracking-tight">Jelajahi Aset</h1>
-          <p className="font-body text-[16px] text-on-surface-variant mt-2">Telusuri {assets.length}+ aset digital premium dari kreator kelas dunia.</p>
+          <p className="font-body text-[16px] text-on-surface-variant mt-2">Telusuri {dbAssets.length}+ aset digital premium dari kreator kelas dunia.</p>
         </div>
 
         {/* Bilah Cari + Urutkan */}

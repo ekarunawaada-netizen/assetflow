@@ -23,10 +23,12 @@ const tickerItems = [
   { label: "KOMPONEN FRAMER", color: "text-[#ae2f34]" },
 ];
 
-const featuredAsset = assets[0];
-const gridAssets = assets.slice(1, 5);
+import { getDynamicAssets } from "@/lib/data";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const dynamicAssets = await getDynamicAssets();
+  const featuredAsset = dynamicAssets[0];
+  const gridAssets = dynamicAssets.slice(0, 8);
   return (
     <>
       <Navbar />
@@ -195,7 +197,7 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {assets.slice(4).map((a) => (
+            {dynamicAssets.slice(3, 7).map((a) => (
               <AssetCard key={a.id} asset={a} />
             ))}
           </div>

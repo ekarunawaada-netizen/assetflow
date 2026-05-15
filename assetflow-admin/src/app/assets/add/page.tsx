@@ -3,13 +3,15 @@ import { useState } from "react";
 import { createAsset } from "@/app/actions/asset";
 import { Upload, X, Check, ArrowLeft, Package } from "lucide-react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
 
 export default function AddAssetPage() {
   const [dragActive, setDragActive] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const supabase = createClient();
   
   // Form fields
   const [title, setTitle] = useState("");
@@ -20,27 +22,49 @@ export default function AddAssetPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setSelectedFile(file.name);
+      setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedFile) {
+      alert("Pilih gambar terlebih dahulu");
+      return;
+    }
     setIsSubmitting(true);
     
     try {
+      // 1. Upload to Supabase Storage
+      const fileExt = selectedFile.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('assets')
+        .upload(filePath, selectedFile);
+
+      if (uploadError) throw uploadError;
+
+      // 2. Get Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('assets')
+        .getPublicUrl(filePath);
+
+      // 3. Create record in Database
       await createAsset({
         title,
         category,
         price,
         description,
-        imageUrl: previewUrl || "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=2070&auto=format&fit=crop"
+        imageUrl: publicUrl
       });
+      
       setIsSuccess(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Gagal menambahkan aset");
+      alert("Gagal menambahkan aset: " + (error.message || "Terjadi kesalahan"));
     } finally {
       setIsSubmitting(false);
     }
@@ -110,7 +134,7 @@ export default function AddAssetPage() {
             </div>
             {selectedFile && (
               <div className="mt-6 flex items-center justify-between p-4 bg-primary/5 rounded-2xl border-2 border-on-background">
-                <span className="text-sm font-black truncate max-w-[220px]">{selectedFile}</span>
+                <span className="text-sm font-black truncate max-w-[220px]">{selectedFile.name}</span>
                 <button 
                   type="button"
                   onClick={(e) => { e.stopPropagation(); setPreviewUrl(null); setSelectedFile(null); }}
