@@ -8,13 +8,16 @@ import {
   BarChart3, 
   Settings, 
   LogOut,
-  Package
+  Package,
+  Inbox,
+  ExternalLink
 } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "Aset Saya", href: "/assets", icon: Package },
   { label: "Tambah Aset", href: "/assets/add", icon: ImagePlus },
+  { label: "Aplikasi", href: "/applications", icon: Inbox },
   { label: "Analitik", href: "/analytics", icon: BarChart3 },
 ];
 
@@ -64,7 +67,16 @@ export default function AdminSidebar() {
         })}
       </nav>
 
-      <div className="p-6 border-t-4 border-on-background">
+      <div className="p-6 border-t-4 border-on-background space-y-3">
+        <a 
+          href={process.env.NEXT_PUBLIC_MARKETPLACE_URL || "#"}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center gap-3 w-full px-5 py-3.5 rounded-2xl font-body font-black text-sm text-primary border-2 border-transparent hover:border-on-background hover:bg-primary/10 transition-all"
+        >
+          <ExternalLink size={20} strokeWidth={2.5} />
+          Lihat Marketplace
+        </a>
         <button 
           onClick={handleLogout}
           className="flex items-center gap-3 w-full px-5 py-3.5 rounded-2xl font-body font-black text-sm text-secondary border-2 border-transparent hover:border-on-background hover:bg-secondary/10 transition-all"

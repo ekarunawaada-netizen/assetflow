@@ -10,17 +10,37 @@ export default function Navbar() {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const supabase = createClient();
 
   useEffect(() => {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      
+      if (user) {
+        const { data: profile } = await supabase
+          .from('Profile')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        setProfile(profile);
+      }
     };
     getUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('Profile')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+        setProfile(profile);
+      } else {
+        setProfile(null);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -37,6 +57,10 @@ export default function Navbar() {
     { href: "/creators", label: "Kreator" },
     { href: "/collections", label: "Koleksi" },
   ];
+
+  if (profile?.role === 'ADMIN') {
+    navLinks.push({ href: process.env.NEXT_PUBLIC_ADMIN_URL || "#", label: "Admin Panel" });
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b-2 border-on-background shadow-[4px_4px_0px_0px_#191c1d] w-full">

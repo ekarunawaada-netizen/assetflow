@@ -19,6 +19,12 @@ enum AssetStatus {
   Draft
 }
 
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model Profile {
   id        String   @id @default(uuid())
   name      String
@@ -28,6 +34,7 @@ model Profile {
   updatedAt DateTime @updatedAt
   
   creator   Creator?
+  applications CreatorApplication[]
 }
 
 model Creator {
@@ -67,4 +74,15 @@ model Collection {
   tags      String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model CreatorApplication {
+  id           String            @id @default(uuid())
+  userId       String
+  user         Profile           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  portfolioUrl String?
+  message      String?
+  status       ApplicationStatus @default(PENDING)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
 }
