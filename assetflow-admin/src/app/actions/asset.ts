@@ -3,28 +3,44 @@
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
-// Ensure a default creator exists and return their ID
-async function getDefaultCreatorId() {
-  const existingCreator = await prisma.creator.findFirst();
-  if (existingCreator) return existingCreator.id;
+import { createClient } from "@/lib/supabase/server";
 
-  // Create a default profile and creator
-  const newProfile = await prisma.profile.create({
-    data: {
-      name: "Admin Creator",
-      role: "ADMIN",
-    }
+// Ensure a creator exists for the current user and return their ID
+async function getCurrentCreatorId() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("Anda harus login untuk menambahkan aset.");
+
+  let profile = await prisma.profile.findUnique({
+    where: { id: user.id }
   });
 
-  const newCreator = await prisma.creator.create({
-    data: {
-      userId: newProfile.id,
-      bio: "Official Admin Asset Creator",
-      verified: true
-    }
+  if (!profile) {
+    profile = await prisma.profile.create({
+      data: {
+        id: user.id,
+        name: user.user_metadata.full_name || "New Creator",
+        username: user.user_metadata.username || `user_${user.id.slice(0, 5)}`,
+        role: "CREATOR"
+      }
+    });
+  }
+
+  let creator = await prisma.creator.findUnique({
+    where: { userId: profile.id }
   });
 
-  return newCreator.id;
+  if (!creator) {
+    creator = await prisma.creator.create({
+      data: {
+        userId: profile.id,
+        bio: "Kreator AssetFlow",
+      }
+    });
+  }
+
+  return creator.id;
 }
 
 export async function getAssets() {
@@ -32,7 +48,6 @@ export async function getAssets() {
     orderBy: { createdAt: 'desc' }
   });
   
-  // Convert decimals to strings for serialization
   return assets.map(asset => ({
     ...asset,
     price: asset.price.toString()
@@ -46,20 +61,26 @@ export async function createAsset(data: {
   description: string;
   imageUrl: string;
 }) {
-  const creatorId = await getDefaultCreatorId();
+  try {
+    const creatorId = await getCurrentCreatorId();
 
-  await prisma.asset.create({
-    data: {
-      title: data.title,
-      category: data.category,
-      price: parseFloat(data.price),
-      imageUrl: data.imageUrl,
-      status: "Aktif",
-      creatorId,
-    }
-  });
+    await prisma.asset.create({
+      data: {
+        title: data.title,
+        category: data.category,
+        price: data.price, // Prisma Decimal accepts string
+        imageUrl: data.imageUrl,
+        status: "Aktif",
+        creatorId,
+      }
+    });
 
-  revalidatePath("/assets");
+    revalidatePath("/assets");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Create Asset Error:", error);
+    return { success: false, error: error.message };
+  }
 }
 
 export async function deleteAsset(id: string) {

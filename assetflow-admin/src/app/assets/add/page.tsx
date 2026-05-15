@@ -53,7 +53,7 @@ export default function AddAssetPage() {
         .getPublicUrl(filePath);
 
       // 3. Create record in Database
-      await createAsset({
+      const result = await createAsset({
         title,
         category,
         price,
@@ -61,7 +61,11 @@ export default function AddAssetPage() {
         imageUrl: publicUrl
       });
       
-      setIsSuccess(true);
+      if (result?.success) {
+        setIsSuccess(true);
+      } else {
+        throw new Error(result?.error || "Gagal menyimpan ke database");
+      }
     } catch (error: any) {
       console.error(error);
       alert("Gagal menambahkan aset: " + (error.message || "Terjadi kesalahan"));
