@@ -14,9 +14,10 @@ export default function LoginPage() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   
   // New States for OTP Flow
-  const [view, setView] = useState<"login" | "forgot" | "otp">("login");
+  const [view, setView] = useState<"login" | "forgot" | "otp" | "register">("login");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [name, setName] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +40,34 @@ export default function LoginPage() {
       setIsLoading(false);
     } else {
       window.location.href = "/";
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setErrorMsg(null);
+    setSuccessMsg(null);
+
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+        },
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      }
+    });
+
+    if (error) {
+      setErrorMsg(error.message);
+      setIsLoading(false);
+    } else {
+      setSuccessMsg("Pendaftaran berhasil! Silakan cek email Anda untuk konfirmasi.");
+      setView("login");
+      setIsLoading(false);
     }
   };
 
@@ -109,8 +138,12 @@ export default function LoginPage() {
           <div className="w-20 h-20 bg-primary text-white rounded-4xl flex items-center justify-center font-headline font-black text-3xl mx-auto mb-6 bento-shadow border-4 border-on-background">
             AF
           </div>
-          <h1 className="font-headline font-black text-4xl text-on-background tracking-tight mb-2">Login Admin</h1>
-          <p className="text-outline font-bold">Hanya kreator terdaftar yang dapat masuk.</p>
+          <h1 className="font-headline font-black text-4xl text-on-background tracking-tight mb-2">
+            {view === "register" ? "Daftar Kreator" : "Login Admin"}
+          </h1>
+          <p className="text-outline font-bold">
+            {view === "register" ? "Mulai perjalanan Anda sebagai kreator." : "Hanya kreator terdaftar yang dapat masuk."}
+          </p>
         </div>
 
         {/* Form Card */}
@@ -193,6 +226,83 @@ export default function LoginPage() {
                 {isLoading ? "Memeriksa..." : "Masuk ke Panel"} 
                 {!isLoading && <ArrowRight size={24} strokeWidth={3} />}
               </button>
+
+              <div className="text-center pt-4">
+                <p className="text-xs font-bold text-outline">
+                  Belum punya akun? {" "}
+                  <button 
+                    type="button"
+                    onClick={() => setView("register")}
+                    className="text-primary font-black hover:underline"
+                  >
+                    Daftar Sekarang
+                  </button>
+                </p>
+              </div>
+            </form>
+          ) : view === "register" ? (
+            <form onSubmit={handleRegister} className="space-y-6 relative z-10">
+              <div className="space-y-2">
+                <label className="text-xs font-black text-on-background uppercase tracking-widest">Nama Lengkap</label>
+                <input 
+                  type="text" 
+                  required
+                  placeholder="John Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full bg-primary/5 border-2 border-on-background rounded-2xl px-6 py-4 text-sm font-bold outline-none focus:border-4 focus:bg-white transition-all bento-shadow-sm"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-black text-on-background uppercase tracking-widest">Email</label>
+                <input 
+                  type="email" 
+                  required
+                  placeholder="john@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-primary/5 border-2 border-on-background rounded-2xl px-6 py-4 text-sm font-bold outline-none focus:border-4 focus:bg-white transition-all bento-shadow-sm"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-black text-on-background uppercase tracking-widest">Kata Sandi</label>
+                <input 
+                  type="password" 
+                  required
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-primary/5 border-2 border-on-background rounded-2xl px-6 py-4 text-sm font-bold outline-none focus:border-4 focus:bg-white transition-all bento-shadow-sm"
+                />
+              </div>
+
+              <button 
+                type="submit"
+                disabled={isLoading}
+                className={`w-full py-5 rounded-2xl font-headline font-black text-lg flex items-center justify-center gap-3 border-4 border-on-background transition-all bento-shadow ${
+                  isLoading 
+                    ? "bg-outline text-white opacity-50 cursor-not-allowed"
+                    : "bg-primary text-white hover:scale-105 active:scale-95"
+                }`}
+              >
+                {isLoading ? "Mendaftar..." : "Daftar Akun"} 
+                {!isLoading && <ArrowRight size={24} strokeWidth={3} />}
+              </button>
+
+              <div className="text-center pt-4">
+                <p className="text-xs font-bold text-outline">
+                  Sudah punya akun? {" "}
+                  <button 
+                    type="button"
+                    onClick={() => setView("login")}
+                    className="text-primary font-black hover:underline"
+                  >
+                    Masuk
+                  </button>
+                </p>
+              </div>
             </form>
           ) : view === "forgot" ? (
             <div className="space-y-6">

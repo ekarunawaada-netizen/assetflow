@@ -112,7 +112,7 @@ export default function CreatorsPage() {
                 Mulai jual aset digital Anda hari ini dan bergabunglah dengan komunitas kreator profesional yang berkembang di AssetFlow.
               </p>
               <Link
-                href="/register-creator"
+                href={(process.env.NEXT_PUBLIC_ADMIN_URL || "") + "/login"}
                 className="inline-block font-headline font-bold text-[16px] bg-primary text-white px-10 py-4 rounded-xl border-2 border-on-background bento-shadow"
               >
                 Jadi Kreator
