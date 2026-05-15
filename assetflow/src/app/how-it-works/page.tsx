@@ -230,7 +230,7 @@ export default function HowItWorksPage() {
               <Link href="/explore" className="font-headline font-bold text-[16px] bg-white text-primary px-8 py-4 rounded-xl border-2 border-white bento-shadow-sm">
                 Mulai Menjelajah
               </Link>
-              <Link href="/upload" className="font-headline font-bold text-[16px] bg-transparent text-white px-8 py-4 rounded-xl border-2 border-white/50 hover:border-white transition-colors">
+              <Link href={(process.env.NEXT_PUBLIC_ADMIN_URL || "") + "/login"} className="font-headline font-bold text-[16px] bg-transparent text-white px-8 py-4 rounded-xl border-2 border-white/50 hover:border-white transition-colors">
                 Jadi Kreator
               </Link>
             </div>

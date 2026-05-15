@@ -26,14 +26,19 @@ enum ApplicationStatus {
 }
 
 model Profile {
-  id        String   @id @default(uuid())
-  name      String
-  avatar    String?
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(uuid())
+  name         String
+  username     String?  @unique
+  phone        String?
+  referralCode String?
+  surveySource String?
+  creatorType  String?  @default("STANDARD")
+  avatar       String?
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
   
-  creator   Creator?
+  creator      Creator?
   applications CreatorApplication[]
 }
 

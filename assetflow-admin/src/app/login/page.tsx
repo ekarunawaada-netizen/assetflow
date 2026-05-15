@@ -15,9 +15,17 @@ export default function LoginPage() {
   
   // New States for OTP Flow
   const [view, setView] = useState<"login" | "forgot" | "otp" | "register">("login");
+  const [registerStep, setRegisterStep] = useState(1);
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  
+  // Registration States
   const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [phone, setPhone] = useState("");
+  const [referral, setReferral] = useState("");
+  const [survey, setSurvey] = useState("");
+  const [creatorType, setCreatorType] = useState<"STANDARD" | "EXCLUSIVE">("STANDARD");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +64,11 @@ export default function LoginPage() {
       options: {
         data: {
           full_name: name,
+          username: username,
+          phone: phone,
+          referral_code: referral,
+          survey_source: survey,
+          creator_type: creatorType,
         },
         emailRedirectTo: `${window.location.origin}/auth/callback`,
       }
@@ -67,6 +80,7 @@ export default function LoginPage() {
     } else {
       setSuccessMsg("Pendaftaran berhasil! Silakan cek email Anda untuk konfirmasi.");
       setView("login");
+      setRegisterStep(1);
       setIsLoading(false);
     }
   };
@@ -139,10 +153,10 @@ export default function LoginPage() {
             AF
           </div>
           <h1 className="font-headline font-black text-4xl text-on-background tracking-tight mb-2">
-            {view === "register" ? "Daftar Kreator" : "Login Admin"}
+            {view === "register" ? (registerStep === 1 ? "Daftar Akun" : registerStep === 2 ? "Survey Singkat" : "Pilih Tipe") : "Login Admin"}
           </h1>
           <p className="text-outline font-bold">
-            {view === "register" ? "Mulai perjalanan Anda sebagai kreator." : "Hanya kreator terdaftar yang dapat masuk."}
+            {view === "register" ? `Langkah ${registerStep} dari 3` : "Hanya kreator terdaftar yang dapat masuk."}
           </p>
         </div>
 
@@ -241,69 +255,163 @@ export default function LoginPage() {
               </div>
             </form>
           ) : view === "register" ? (
-            <form onSubmit={handleRegister} className="space-y-6 relative z-10">
-              <div className="space-y-2">
-                <label className="text-xs font-black text-on-background uppercase tracking-widest">Nama Lengkap</label>
-                <input 
-                  type="text" 
-                  required
-                  placeholder="John Doe"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-primary/5 border-2 border-on-background rounded-2xl px-6 py-4 text-sm font-bold outline-none focus:border-4 focus:bg-white transition-all bento-shadow-sm"
-                />
-              </div>
+            <div className="space-y-6 relative z-10">
+              {registerStep === 1 && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-on-background uppercase">Nama Lengkap</label>
+                      <input 
+                        type="text" required placeholder="John Doe" value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="w-full bg-primary/5 border-2 border-on-background rounded-xl px-4 py-3 text-sm font-bold outline-none focus:bg-white transition-all"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-on-background uppercase">Username</label>
+                      <input 
+                        type="text" required placeholder="johndoe" value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="w-full bg-primary/5 border-2 border-on-background rounded-xl px-4 py-3 text-sm font-bold outline-none focus:bg-white transition-all"
+                      />
+                    </div>
+                  </div>
 
-              <div className="space-y-2">
-                <label className="text-xs font-black text-on-background uppercase tracking-widest">Email</label>
-                <input 
-                  type="email" 
-                  required
-                  placeholder="john@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-primary/5 border-2 border-on-background rounded-2xl px-6 py-4 text-sm font-bold outline-none focus:border-4 focus:bg-white transition-all bento-shadow-sm"
-                />
-              </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-on-background uppercase">Email</label>
+                    <input 
+                      type="email" required placeholder="john@example.com" value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full bg-primary/5 border-2 border-on-background rounded-xl px-4 py-3 text-sm font-bold outline-none focus:bg-white transition-all"
+                    />
+                  </div>
 
-              <div className="space-y-2">
-                <label className="text-xs font-black text-on-background uppercase tracking-widest">Kata Sandi</label>
-                <input 
-                  type="password" 
-                  required
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-primary/5 border-2 border-on-background rounded-2xl px-6 py-4 text-sm font-bold outline-none focus:border-4 focus:bg-white transition-all bento-shadow-sm"
-                />
-              </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-on-background uppercase">Kata Sandi</label>
+                    <input 
+                      type="password" required placeholder="••••••••" value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full bg-primary/5 border-2 border-on-background rounded-xl px-4 py-3 text-sm font-bold outline-none focus:bg-white transition-all"
+                    />
+                  </div>
 
-              <button 
-                type="submit"
-                disabled={isLoading}
-                className={`w-full py-5 rounded-2xl font-headline font-black text-lg flex items-center justify-center gap-3 border-4 border-on-background transition-all bento-shadow ${
-                  isLoading 
-                    ? "bg-outline text-white opacity-50 cursor-not-allowed"
-                    : "bg-primary text-white hover:scale-105 active:scale-95"
-                }`}
-              >
-                {isLoading ? "Mendaftar..." : "Daftar Akun"} 
-                {!isLoading && <ArrowRight size={24} strokeWidth={3} />}
-              </button>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-on-background uppercase">No HP</label>
+                      <input 
+                        type="tel" required placeholder="0812..." value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full bg-primary/5 border-2 border-on-background rounded-xl px-4 py-3 text-sm font-bold outline-none focus:bg-white transition-all"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black text-on-background uppercase tracking-tighter">Referral (Opsional)</label>
+                      <input 
+                        type="text" placeholder="KODE123" value={referral}
+                        onChange={(e) => setReferral(e.target.value)}
+                        className="w-full bg-primary/5 border-2 border-on-background rounded-xl px-4 py-3 text-sm font-bold outline-none focus:bg-white transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => setRegisterStep(2)}
+                    className="w-full py-4 bg-primary text-white rounded-xl font-headline font-black text-lg border-4 border-on-background bento-shadow flex items-center justify-center gap-2"
+                  >
+                    Lanjut <ArrowRight size={20} strokeWidth={3} />
+                  </button>
+                </div>
+              )}
+
+              {registerStep === 2 && (
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <label className="text-sm font-black text-on-background text-center block">Dari mana Anda mengenal AssetFlow?</label>
+                    <div className="grid grid-cols-1 gap-3">
+                      {["Media Sosial (IG/TikTok)", "Iklan Google", "Teman / Rekomendasi", "Komunitas Desain", "Lainnya"].map((opt) => (
+                        <button
+                          key={opt}
+                          onClick={() => setSurvey(opt)}
+                          className={`w-full py-4 rounded-xl font-bold text-sm border-2 transition-all ${
+                            survey === opt ? "bg-primary text-white border-on-background translate-x-1 translate-y-1 shadow-none" : "bg-white text-on-background border-on-background bento-shadow-sm hover:bg-primary/5"
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-4">
+                    <button onClick={() => setRegisterStep(1)} className="flex-1 py-4 bg-white text-on-background rounded-xl font-bold border-2 border-on-background">Kembali</button>
+                    <button 
+                      onClick={() => { if(survey) setRegisterStep(3); else setErrorMsg("Pilih salah satu jawaban survey."); }}
+                      className="flex-1 py-4 bg-primary text-white rounded-xl font-black border-2 border-on-background bento-shadow"
+                    >
+                      Lanjut
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {registerStep === 3 && (
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <label className="text-sm font-black text-on-background text-center block">Pilih Tipe Kreator Anda</label>
+                    
+                    <button
+                      onClick={() => setCreatorType("EXCLUSIVE")}
+                      className={`w-full p-5 rounded-2xl border-4 text-left transition-all ${
+                        creatorType === "EXCLUSIVE" ? "bg-primary/10 border-primary" : "bg-white border-on-background"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-headline font-black text-lg">Kreator Eksklusif</span>
+                        {creatorType === "EXCLUSIVE" && <div className="w-4 h-4 bg-primary rounded-full border-2 border-on-background" />}
+                      </div>
+                      <p className="text-xs font-medium text-on-surface-variant">Hanya menjual aset di AssetFlow. Bagi hasil lebih tinggi (80%).</p>
+                    </button>
+
+                    <button
+                      onClick={() => setCreatorType("STANDARD")}
+                      className={`w-full p-5 rounded-2xl border-4 text-left transition-all ${
+                        creatorType === "STANDARD" ? "bg-primary/10 border-primary" : "bg-white border-on-background"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-headline font-black text-lg">Kreator Standar</span>
+                        {creatorType === "STANDARD" && <div className="w-4 h-4 bg-primary rounded-full border-2 border-on-background" />}
+                      </div>
+                      <p className="text-xs font-medium text-on-surface-variant">Dapat menjual aset di platform lain. Bagi hasil standar (70%).</p>
+                    </button>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <button onClick={() => setRegisterStep(2)} className="flex-1 py-4 bg-white text-on-background rounded-xl font-bold border-2 border-on-background">Kembali</button>
+                    <button 
+                      onClick={handleRegister}
+                      disabled={isLoading}
+                      className="flex-1 py-4 bg-primary text-white rounded-xl font-black border-4 border-on-background bento-shadow"
+                    >
+                      {isLoading ? "Memproses..." : "Selesaikan"}
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div className="text-center pt-4">
                 <p className="text-xs font-bold text-outline">
                   Sudah punya akun? {" "}
                   <button 
                     type="button"
-                    onClick={() => setView("login")}
+                    onClick={() => { setView("login"); setRegisterStep(1); }}
                     className="text-primary font-black hover:underline"
                   >
                     Masuk
                   </button>
                 </p>
               </div>
-            </form>
+            </div>
           ) : view === "forgot" ? (
             <div className="space-y-6">
               <div className="space-y-2">
