@@ -2,7 +2,7 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import AssetCard from "@/components/features/AssetCard";
-import { getDynamicAssets, categories } from "@/lib/data";
+import { getDynamicAssets, categories, Asset } from "@/lib/data";
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
@@ -13,7 +13,7 @@ function ExploreContent() {
   const searchParams = useSearchParams();
   const qParam = searchParams.get("q") || "";
   
-  const [dbAssets, setDbAssets] = useState<any[]>([]);
+  const [dbAssets, setDbAssets] = useState<Asset[]>([]);
   const [activeCategory, setActiveCategory] = useState("Semua Aset");
   const [sortBy, setSortBy] = useState("Terbaru");
   const [searchQuery, setSearchQuery] = useState(qParam);
@@ -38,14 +38,14 @@ function ExploreContent() {
     if (searchQuery) {
       list = list.filter((a) =>
         a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        a.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()))
+        a.tags.some((t: string) => t.toLowerCase().includes(searchQuery.toLowerCase()))
       );
     }
     if (sortBy === "Harga: Rendah ke Tinggi") list.sort((a, b) => a.price - b.price);
     else if (sortBy === "Harga: Tinggi ke Rendah") list.sort((a, b) => b.price - a.price);
     else if (sortBy === "Paling Populer") list.sort((a, b) => b.downloads - a.downloads);
     return list;
-  }, [activeCategory, sortBy, searchQuery]);
+  }, [activeCategory, sortBy, searchQuery, dbAssets]);
 
   return (
     <>
