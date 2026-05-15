@@ -11,7 +11,7 @@ async function getCurrentCreatorId() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    // If no user (e.g. auth limit), try to find ANY creator for testing
+    // Fallback if no user
     if (!user) {
       const fallback = await prisma.creator.findFirst();
       if (fallback) return fallback.id;
@@ -24,8 +24,8 @@ async function getCurrentCreatorId() {
       update: {},
       create: {
         id: user.id,
-        name: user.user_metadata.full_name || "New Creator",
-        username: user.user_metadata.username || `user_${user.id.slice(0, 5)}`,
+        name: user.user_metadata?.full_name || user.email?.split('@')[0] || "Kreator",
+        username: user.user_metadata?.username || `user_${user.id.slice(0, 5)}`,
         role: "CREATOR"
       }
     });
@@ -40,12 +40,12 @@ async function getCurrentCreatorId() {
     });
 
     return creator.id;
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error in getCurrentCreatorId:", err);
-    // Last resort fallback
+    // Try to get a fallback creator one last time
     const lastResort = await prisma.creator.findFirst();
     if (lastResort) return lastResort.id;
-    throw err;
+    throw new Error("Gagal mengidentifikasi kreator: " + err.message);
   }
 }
 
