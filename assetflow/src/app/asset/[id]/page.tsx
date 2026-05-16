@@ -2,6 +2,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import AssetCard from "@/components/features/AssetCard";
 import { assets } from "@/lib/data";
+import { formatRupiah } from "@/lib/format";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -64,13 +65,13 @@ export default async function AssetDetailPage({ params }: PageProps) {
               <div className="space-y-6">
                 <div className="flex gap-8 border-b-2 border-outline-variant pb-4">
                   <button className="font-headline font-bold text-[16px] text-primary border-b-4 border-primary pb-4 mb-[-18px]">
-                    Description
+                    Deskripsi
                   </button>
                   <button className="font-headline font-bold text-[16px] text-on-surface-variant hover:text-on-background transition-colors pb-4">
-                    Reviews ({asset.reviews})
+                    Ulasan ({asset.reviews})
                   </button>
                   <button className="font-headline font-bold text-[16px] text-on-surface-variant hover:text-on-background transition-colors pb-4">
-                    Support
+                    Bantuan
                   </button>
                 </div>
 
@@ -79,18 +80,18 @@ export default async function AssetDetailPage({ params }: PageProps) {
                     {asset.description}
                   </p>
                   <p className="font-body text-[16px] text-on-surface-variant mt-4 leading-relaxed">
-                    This premium asset was carefully crafted by {asset.creator.name} using professional tools. 
-                    It includes all the source files you need to kickstart your next project.
+                    Aset premium ini dibuat dengan teliti oleh {asset.creator.name} menggunakan peralatan profesional. 
+                    Sudah termasuk semua file sumber yang kamu butuhkan untuk memulai proyek berikutnya.
                   </p>
-                  <h4 className="font-headline font-bold text-[20px] text-on-background mt-8 mb-4">What's included:</h4>
+                  <h4 className="font-headline font-bold text-[20px] text-on-background mt-8 mb-4">Yang kamu dapatkan:</h4>
                   <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[
-                      "Fully layered & organized source files",
-                      "High-resolution exports (PNG, SVG, JPG)",
-                      "Free lifetime updates",
-                      "Standard Commercial License",
-                      "Documentation & Quick Start Guide",
-                      "Direct support from the creator"
+                      "File sumber yang terorganisir & berlapis",
+                      "Ekspor resolusi tinggi (PNG, SVG, JPG)",
+                      "Update gratis seumur hidup",
+                      "Lisensi Komersial Standar",
+                      "Dokumentasi & Panduan Cepat",
+                      "Dukungan langsung dari kreator"
                     ].map((item) => (
                       <li key={item} className="flex items-center gap-3 font-body text-[15px] text-on-surface-variant">
                         <span className="material-symbols-outlined text-tertiary text-[20px]">check_circle</span>
@@ -119,12 +120,12 @@ export default async function AssetDetailPage({ params }: PageProps) {
                 </div>
 
                 <div className="flex items-center justify-between py-6 border-y-2 border-outline-variant">
-                  <div className="font-headline text-4xl font-black text-on-background">
-                    ${asset.price}
+                  <div className="font-headline text-3xl font-black text-on-background">
+                    {formatRupiah(asset.price)}
                   </div>
                   {asset.priceEth && (
                     <div className="text-right">
-                      <div className="font-body font-bold text-[14px] text-on-surface-variant">Estimated</div>
+                      <div className="font-body font-bold text-[14px] text-on-surface-variant">Estimasi</div>
                       <div className="font-headline font-bold text-[18px] text-primary">{asset.priceEth}</div>
                     </div>
                   )}
@@ -133,11 +134,11 @@ export default async function AssetDetailPage({ params }: PageProps) {
                 <div className="space-y-4">
                   <button className="w-full bg-primary text-on-primary font-headline font-bold text-[18px] py-4 rounded-xl border-2 border-on-background bento-shadow active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-3">
                     <span className="material-symbols-outlined">shopping_bag</span>
-                    Buy Now
+                    Beli Sekarang
                   </button>
                   <button className="w-full bg-surface text-on-background font-headline font-bold text-[16px] py-4 rounded-xl border-2 border-on-background hover:bg-surface-variant transition-colors flex items-center justify-center gap-3">
                     <span className="material-symbols-outlined">favorite</span>
-                    Add to Wishlist
+                    Tambah ke Wishlist
                   </button>
                 </div>
 

@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { getAssets, deleteAsset } from "@/app/actions/asset";
+import { formatRupiah } from "@/lib/format";
 import { 
   MoreVertical, 
   Search, 
@@ -100,7 +101,7 @@ export default function AssetsPage() {
                       </span>
                     </td>
                     <td className="px-8 py-6">
-                      <span className="text-lg font-black text-on-background tracking-tight">${asset.price}</span>
+                      <span className="text-lg font-black text-on-background tracking-tight">{formatRupiah(asset.price)}</span>
                     </td>
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-2">

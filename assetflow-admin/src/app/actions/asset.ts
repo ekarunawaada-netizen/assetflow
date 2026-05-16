@@ -11,14 +11,15 @@ async function getCurrentCreatorId() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Fallback if no user
+    // If no user, try to get ANY creator as fallback (for testing/admin purposes)
     if (!user) {
+      console.log("No user found, attempting fallback to first creator");
       const fallback = await prisma.creator.findFirst();
       if (fallback) return fallback.id;
       throw new Error("Sesi habis. Silakan login kembali.");
     }
 
-    // Use UPSERT to handle profile creation safely
+    // Ensure Profile exists
     const profile = await prisma.profile.upsert({
       where: { id: user.id },
       update: {},
@@ -30,6 +31,7 @@ async function getCurrentCreatorId() {
       }
     });
 
+    // Ensure Creator exists
     const creator = await prisma.creator.upsert({
       where: { userId: profile.id },
       update: {},
@@ -42,10 +44,10 @@ async function getCurrentCreatorId() {
     return creator.id;
   } catch (err: any) {
     console.error("Error in getCurrentCreatorId:", err);
-    // Try to get a fallback creator one last time
+    // Final fallback
     const lastResort = await prisma.creator.findFirst();
     if (lastResort) return lastResort.id;
-    throw new Error("Gagal mengidentifikasi kreator: " + err.message);
+    throw err;
   }
 }
 
@@ -68,25 +70,30 @@ export async function createAsset(data: {
   imageUrl: string;
 }) {
   try {
+    console.log("Creating asset with data:", { ...data, description: "..." });
     const creatorId = await getCurrentCreatorId();
+    console.log("Found creatorId:", creatorId);
 
     const newAsset = await prisma.asset.create({
       data: {
         title: data.title,
         description: data.description,
         category: data.category,
-        price: data.price,
+        price: parseFloat(data.price) || 0, // Ensure numeric value for Decimal field
         imageUrl: data.imageUrl,
         status: "Aktif",
         creatorId,
       }
     });
 
-    // Note: Removed revalidatePath temporarily to diagnose Vercel crashes
+    console.log("Asset created successfully:", newAsset.id);
+    revalidatePath("/assets");
     return { success: true, id: newAsset.id };
   } catch (error: any) {
-    console.error("CREATE_ASSET_ERROR:", error);
-    return { success: false, error: error.message || "Gagal menyimpan ke database" };
+    console.error("CREATE_ASSET_ERROR_FULL:", error);
+    // Extracting a cleaner error message
+    const errorMessage = error instanceof Error ? error.message : "Gagal menyimpan ke database";
+    return { success: false, error: errorMessage };
   }
 }
 

@@ -97,7 +97,7 @@ export default async function HomePage() {
                 <h4 className="font-headline font-bold text-[14px] text-on-background">Dasbor FinTech</h4>
                 <div className="flex justify-between items-center mt-2">
                   <span className="text-[12px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">Kit UI</span>
-                  <span className="font-bold text-[14px]">$79</span>
+                  <span className="font-bold text-[14px]">Rp 1.2jt</span>
                 </div>
               </div>
 
@@ -174,7 +174,7 @@ export default async function HomePage() {
             {[
               { value: "50K+", label: "Aset Digital" },
               { value: "10K+", label: "Kreator Aktif" },
-              { value: "$2Juta+", label: "Penghasilan Kreator" },
+              { value: "Rp 30M+", label: "Penghasilan Kreator" },
               { value: "4.9★", label: "Rating Rata-rata" },
             ].map((stat) => (
               <div key={stat.label}>

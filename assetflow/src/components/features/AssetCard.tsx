@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Asset } from "@/lib/data";
+import { formatRupiah } from "@/lib/format";
 
 interface AssetCardProps {
   asset: Asset;
@@ -43,7 +44,7 @@ export default function AssetCard({ asset, featured = false }: AssetCardProps) {
                 <span className="font-body text-[14px] font-bold">{asset.creator.handle}</span>
               </div>
               <button className="bg-primary text-white font-bold px-4 py-2 rounded-xl border-2 border-on-background bento-shadow-sm active:translate-y-1 active:shadow-none transition-all">
-                Beli ${asset.price}
+                Beli {formatRupiah(asset.price)}
               </button>
             </div>
           </div>
@@ -77,7 +78,7 @@ export default function AssetCard({ asset, featured = false }: AssetCardProps) {
             </span>
           </div>
           <div className="flex justify-between items-center mt-3">
-            <span className="font-headline font-black text-[18px] text-on-background">${asset.price}</span>
+            <span className="font-headline font-black text-[18px] text-on-background">{formatRupiah(asset.price)}</span>
             <button
               className="w-8 h-8 rounded-full bg-white border-2 border-on-background flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
               aria-label="Tambah ke keranjang"

@@ -2,12 +2,13 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useState } from "react";
+import { formatRupiah } from "@/lib/format";
 import Link from "next/link";
 
 const categories = ["Kit UI", "Model 3D", "Templat", "Set Ikon", "Seni Digital", "Motion / Animasi", "Font", "Lainnya"];
 const licenses = [
   { id: "standard", label: "Lisensi Standar", desc: "Untuk penggunaan pribadi dan komersial. Bukan untuk dijual kembali.", price: "Gratis" },
-  { id: "extended", label: "Lisensi Diperluas", desc: "Termasuk hak penjualan kembali dan penyiaran.", price: "+$50" },
+  { id: "extended", label: "Lisensi Diperluas", desc: "Termasuk hak penjualan kembali dan penyiaran.", price: "+ Rp 750.000" },
 ];
 
 export default function UploadPage() {
@@ -16,6 +17,7 @@ export default function UploadPage() {
   const [selectedLicense, setSelectedLicense] = useState("standard");
   const [step, setStep] = useState(1);
   const [submitted, setSubmitted] = useState(false);
+  const [price, setPrice] = useState("450000");
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -177,12 +179,19 @@ export default function UploadPage() {
                   <h2 className="font-headline font-bold text-[18px] text-on-background">Tetapkan Harga Anda</h2>
 
                   <div>
-                    <label className="font-body font-bold text-[13px] text-on-background block mb-2">Harga (USD) *</label>
+                    <label className="font-body font-bold text-[13px] text-on-background block mb-2">Harga (IDR) *</label>
                     <div className="flex items-center border-2 border-on-background rounded-xl overflow-hidden focus-within:shadow-[4px_4px_0px_0px_#2346d5] transition-all">
-                      <span className="font-headline font-bold text-[18px] px-4 py-3 bg-background border-r-2 border-on-background">$</span>
-                      <input type="number" placeholder="29" min="1" className="flex-1 px-4 py-3 font-headline font-bold text-[24px] outline-none" />
+                      <span className="font-headline font-bold text-[18px] px-4 py-3 bg-background border-r-2 border-on-background">Rp</span>
+                      <input 
+                        type="number" 
+                        placeholder="450000" 
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        min="10000" 
+                        className="flex-1 px-4 py-3 font-headline font-bold text-[24px] outline-none" 
+                      />
                     </div>
-                    <p className="font-body text-[12px] text-outline mt-2">Rentang yang disarankan: $9 – $149. Anda menyimpan 70–80% dari setiap penjualan.</p>
+                    <p className="font-body text-[12px] text-outline mt-2">Rentang yang disarankan: Rp 50.000 – Rp 2.000.000. Anda menyimpan 70–80% dari setiap penjualan.</p>
                   </div>
 
                   <div>
@@ -225,7 +234,7 @@ export default function UploadPage() {
                       { label: "File", value: selectedFile || "Tidak ada file" },
                       { label: "Judul", value: "Kit UI Dasbor Minimalis (contoh)" },
                       { label: "Kategori", value: "Kit UI" },
-                      { label: "Harga", value: "$29" },
+                      { label: "Harga", value: formatRupiah(price) },
                       { label: "Lisensi", value: selectedLicense === "standard" ? "Lisensi Standar" : "Lisensi Diperluas" },
                     ].map((item) => (
                       <div key={item.label} className="flex items-center justify-between py-3 border-b border-surface-variant last:border-0">
@@ -282,9 +291,9 @@ export default function UploadPage() {
               <h3 className="font-headline font-bold text-[16px] text-on-background mb-3">Kalkulator Pendapatan</h3>
               <div className="space-y-2">
                 {[
-                  { price: "$29", monthly: "100 penjualan", earn: "$2.030/bln" },
-                  { price: "$59", monthly: "50 penjualan", earn: "$2.065/bln" },
-                  { price: "$99", monthly: "20 penjualan", earn: "$1.386/bln" },
+                  { price: "Rp 150rb", monthly: "100 penjualan", earn: "Rp 10,5jt/bln" },
+                  { price: "Rp 500rb", monthly: "50 penjualan", earn: "Rp 17,5jt/bln" },
+                  { price: "Rp 1jt", monthly: "20 penjualan", earn: "Rp 14jt/bln" },
                 ].map((r) => (
                   <div key={r.price} className="flex items-center justify-between p-3 bg-background rounded-lg">
                     <div>

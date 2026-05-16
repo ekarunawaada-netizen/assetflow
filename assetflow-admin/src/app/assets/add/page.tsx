@@ -197,12 +197,12 @@ export default function AddAssetPage() {
             </div>
 
             <div>
-              <label className="text-xs font-black text-on-background uppercase tracking-widest block mb-3">Harga (USD)</label>
-              <div className="flex items-center bg-white border-4 border-on-background rounded-2xl px-6 bento-shadow-sm">
-                <span className="font-black text-on-background mr-3 text-lg">$</span>
+              <label className="text-xs font-black text-on-background uppercase tracking-widest block mb-3">Harga (IDR)</label>
+              <div className="flex items-center bg-white border-4 border-on-background rounded-2xl px-6 bento-shadow-sm focus-within:bg-primary/5 transition-all">
+                <span className="font-black text-on-background mr-3 text-lg">Rp</span>
                 <input 
                   type="number" 
-                  placeholder="29"
+                  placeholder="450000"
                   className="w-full bg-transparent py-4 text-sm font-black outline-none"
                   required
                   value={price}
